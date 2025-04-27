@@ -1,0 +1,39 @@
+------------------------
+Colon cancer API 
+------------------------
+
+URL for AJAX call: 
+
+""
+
+INPUT (FormData object): 
+
+temp id as 'temp_id', Image file as 'image_file'.
+
+USAGE:
+
+The input data should be passed as a FormData object with the temp id and image file specified in the object as 'img_file' and 'temp_id' respectively with an AJAX call to the url: "". On receiving the input parameters the module processes the data and returns a JSON with its 'status' signifying if the processing was successful. 
+
+- If 'status' is true, the response JSON has the structure: 
+
+ {'temp_id'  		: temp_id
+  'status' 		: TRUE, 
+  'Adipose'		: 'b/w 0 and 1,
+  'Complex'		: 'b/w 0 and 1,
+  'Debris'		: 'b/w 0 and 1,
+  'Empty'		: 'b/w 0 and 1,
+  'Lympho'		: 'b/w 0 and 1,
+  'Mucosa'		: 'b/w 0 and 1,
+  'Storma'		: 'b/w 0 and 1,
+  'Tumor'       : 'b/w 0 and 1,
+  }    
+    
+	 
+- If 'status' is false, the response JSON has the structure: 
+ {'temp_id','status', 'message'} 
+ where message can be one of:
+  [ERROR] in reading request form and files :
+  [ERROR] saving image file: 
+  [ERROR] while preprocessing imgage:
+  [ERROR] while getting prediction map:
+  

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Healthcare</title>
+    <link href="../static/css/colon-cancer.css" rel="stylesheet" type="text/css">
+    <script src="../static/js/jquery-3.5.0.min.js"></script>
+    <script src="../static/js/wheel-zoom.js" type="text/javascript"></script>
+    <script src="../static/js/tiff.min.js" type="text/javascript"></script>
+    <style type="text/css" media="screen">
+        .bufferscreen {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            display: flex;
+            z-index: 999999;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            align-items: center;
+            left: 0;
+            top: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .lds-ring {
+            display: inline-block;
+            position: relative;
+            width: 64px;
+            height: 64px;
+        }
+
+        .lds-ring div {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            margin: 6px;
+            border: 6px solid #fff;
+            border-radius: 50%;
+            animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-color: #fff transparent transparent transparent;
+        }
+
+        .lds-ring div:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+
+        .lds-ring div:nth-child(2) {
+            animation-delay: -0.3s;
+        }
+
+        .lds-ring div:nth-child(3) {
+            animation-delay: -0.15s;
+        }
+
+        @keyframes lds-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .errorMsg {
+            position: absolute;
+            color: red;
+            justify-content: center;
+            z-index: 999999999999;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 16px;
+            box-shadow: 0px 6px 11px #333;
+            box-sizing: border-box;
+            left: 0;
+            text-align: center;
+            font-size: 22px;
+            display: none;
+            font-family: sans-serif;
+            font-weight: 400;
+        }
+        .preview1{
+            height: 220px !important;
+            width: 160px;
+        }
+    </style>
+</head>
+
+<body id="resultPage">
+
+    <div class="wrap">
+        <header>
+            <a href="#"><img src="../static/image/homeBtn.png" alt=""></a>
+            <img src="../static/image/logo.png" alt="">
+            <a href="#"><img src="../static/image/login-btn.png"></a>
+        </header>
+        <div class="main">
+            <section class="box box-left">
+                <div class="box-wrap">
+                    <div class="upImg-Box">
+                        <div id="tif-canvas-div" style="display: none; "></div>
+                        <img id="show-colon-uploaded-image" src="#" alt="" class="upImg zoom" style="width: 800px; height: 670px;">
+                    </div>
+                    <!--                    <span class="zoomBtn"><img src="images/zoom.png"></span>-->
+                    <div class="upload-btn-wrapper mt20">
+                        <button class="btn2 upimagenow" id="display-tiff-image">Upload a file</button>
+                        <!--                        <input type="file" name="myfile" class="upimagenow">-->
+                    </div>
+                </div>
+            </section>
+            <section class="box box-right">
+                <div class="raw headSec">
+                    <span>Colon Cancer</span><span>Result</span>
+                </div>
+                <div class="raw m20">
+                    <div class="result-sec">
+                        <ul class="resultTable">
+                            <!--li will be loop for the result-->
+                            <div id="result-data" style="font-size: 36px;">
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                <div class="raw submitSec">
+                    <button id="analyse-button">Diagnose</button><button class="saveBtn">Save</button>
+                </div>
+            </section>
+
+
+            <!--sample images-->
+
+            <div class="slide-sample">
+                <div class="slideHead" style="margin-bottom: 20px;">
+                    <h4>Recently uploaded :</h4>
+                    <div class="upload-btn-wrapper">
+                        <button class="btn2">Browse</button>
+                        <input id="input-colon-image" type="file" name="myfile" class="upimagenow">
+                    </div>
+                </div>
+
+                <!--                <a href="#" class="preSlide">&#60;</a>-->
+                <div class="slideouter">
+                    <div class="slideinner srcl">
+                     
+                        <div>
+                            <div id="tif-canvas" style="display: none; width: 50px; height: 50px; " onclick="myFunction(this)"></div>
+                            <img src="../static/image/colon-cancer/colon_cancer_3.tif" alt="" id="image1" ></div> 
+                        <div>
+                            <div id="tif-canvas1" style="display: none; width: 50px; height: 50px; " onclick="myFunction(this)"></div>
+                            <img src="../static/image/colon-cancer/colon_cancer_5.tif" alt="" id="image2"  >
+                            </div>
+                        <div>
+                            <div id="tif-canvas2" style="display: none; width: 50px; height: 50px; " onclick="myFunction(this)"></div>
+                            <img src="../static/image/colon-cancer/colon_cancer_10.tif" alt="" id="image3" ></div>
+                        <div>
+                            <div id="tif-canvas3" style="display: none; width: 50px; height: 50px; " onclick="myFunction(this)"></div>
+                            <img src="../static/image/colon-cancer/colon_cancer_7.tif" alt="" id="image4" ></div>
+                    </div>
+                </div>
+                <!--                <a href="#" class="nextSlide">&#62;</a>-->
+
+                <div class="slideHead" style="margin-top: 20px">
+                    <button class="thmBtn closeSample">Cancel</button>
+                    <button class="thmBtn">Upload</button>
+                </div>
+            </div>
+
+            <!--end sample images-->
+
+
+
+        </div>
+        <div id="buffer" class="bufferscreen">
+            <div id="spinner" class="lds-ring">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+        <!--main section end-->
+    </div>
+
+    <script>
+        $(function() {
+            $(".upimagenow").change(function() {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = imageIsLoaded;
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        });
+
+        function imageIsLoaded(e) {
+            $('.upImg').attr('src', e.target.result);
+        };
+    </script>
+
+    <script>
+        wheelzoom(document.querySelector('img.zoom'));
+    </script>
+
+
+
+    <!--sample image js-->
+
+
+
+    <script>
+        $(document).ready(function() {
+            $(".closeSample").click(function() {
+                $(".slide-sample").hide();
+            });
+        });
+
+
+
+        $(document).ready(function() {
+            $(".upimagenow").click(function() {
+                $(".slide-sample").show();
+            });
+        });
+    </script>
+
+    <!--end show hide sample-->
+
+    <script>
+        var uploadimg;
+var selectFlag = false;
+var uploadFlag = false;
+
+function myFunction(event) {
+$('.slide-sample').hide();
+
+document.getElementById('show-colon-uploaded-image').style.visibility='visible';
+document.getElementById('analyse-button').disabled = false;
+var extension = event.nextElementSibling.src.split('.').pop().toLowerCase();
+var request = new XMLHttpRequest();
+request.open('GET', event.nextElementSibling.src, true);
+request.responseType = 'blob';
+request.onload = function () {
+  var reader = new FileReader();
+  reader.readAsDataURL(request.response);
+
+  uploadimg = new File([request.response], 'image.png', {
+    type: 'image/png',
+  });
+if (extension == 'tiff' || extension=='tif') {
+     
+                            var tiff_reader = new FileReader()
+                            tiff_reader.onload = function (e) {
+                                Tiff.initialize({
+              TOTAL_MEMORY: 100000000
+            });
+            var tiff = new Tiff({
+              buffer: e.target.result
+            });
+                                var canvas = tiff.toCanvas()
+                                $(canvas).css({
+              
+              "width": "700px",
+              "height": "670px",
+            }).addClass("preview");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                if (canvas) {
+                                    document.getElementById('show-colon-uploaded-image').style.display = "none";
+                                    document.getElementById('tif-canvas-div').innerHTML = ''
+                                    document.getElementById('tif-canvas-div').append(canvas)
+                                    document.getElementById('tif-canvas-div').style.display = "block";
+                                }
+                            }
+                            tiff_reader.readAsArrayBuffer(request.response);
+                        } else {
+                            
+                                $('#show-colon-uploaded-image').attr('src', event.src);
+                                document.getElementById('show-colon-uploaded-image').style.visibility='visible';
+                                document.getElementById('show-colon-uploaded-image').style.display = "block";
+                                document.getElementById('tif-canvas-div').style.display = "none";
+                            }
+                           
+
+document.getElementById('result-data').innerHTML = '';
+
+  selectFlag = true;
+};
+request.send();
+}
+
+$(document).ready(() => {
+   
+   document.getElementById('show-colon-uploaded-image').style.visibility='hidden';
+   
+
+})
+document.getElementById('input-colon-image').addEventListener('change',function(){
+document.getElementById('result-data').innerHTML = '';
+
+selectFlag = false;
+  uploadFlag = true;
+   if(this.files[0]){
+       if(validateImage(this.files[0])){
+        
+        let img_type = this.files[0].type;
+                        if (img_type == 'image/tiff') {
+                            var tiff_reader = new FileReader()
+                            tiff_reader.onload = function (e) {
+                                var tiff = new Tiff({ buffer: e.target.result })
+                                var canvas = tiff.toCanvas()
+                                $(canvas).css({
+              
+              "width": "700px",
+              "height": "670px",
+            }).addClass("preview");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                                if (canvas) {
+                                    document.getElementById('show-colon-uploaded-image').style.display = "none";
+                                    document.getElementById('tif-canvas-div').innerHTML = ''
+                                    document.getElementById('tif-canvas-div').append(canvas)
+                                    document.getElementById('tif-canvas-div').style.display = "block";
+                                }
+                            }
+                            tiff_reader.readAsArrayBuffer(this.files[0]);
+                        } else {
+                            var reader = new FileReader()
+                            reader.onload = function (e) {
+                                $('#show-colon-uploaded-image').attr('src', e.target.result);
+                                document.getElementById('show-colon-uploaded-image').style.visibility='visible';
+                                document.getElementById('show-colon-uploaded-image').style.display = "block";
+                                document.getElementById('tif-canvas-div').style.display = "none";
+                            }
+                            reader.readAsDataURL(this.files[0]);
+                        }
+          
+           document.getElementById('analyse-button').disabled = false;
+           $(".slide-sample").hide();
+           document.getElementById('result-data').src = '';
+       }
+       
+   }
+
+})
+
+function validateImage(file){
+   var image_file_type = file.type
+   var image_file_size = file.size /1024/1024
+   const valid_image_file_types = ['image/gif','image/tiff','image/jpeg', 'image/png'];
+   var message = ''
+   let status = false
+   if(!valid_image_file_types.includes(image_file_type)){
+       message = 'invalid image file type ,image file should be tiff ,jpg or png'
+       status = false
+       showErrorMsg(message);
+   }
+   else if(image_file_size > 5){
+       message = 'File size too big ,should be less that 10 mb'
+       status = false
+       showErrorMsg(message)
+   }
+   else{
+       message = 'image uploaded successfully'
+       status = true
+   }
+   
+   return status
+}
+ var Tiff;
+function displayTiff(){
+    let xhr = new XMLHttpRequest();
+    xhr.responseType='arraybuffer';
+    xhr.open('GET',"../static/image/colon-cancer/colon_cancer_2.tif")
+    xhr.onload=(e)=>{
+        let tiff1=new Tiff({buffer: xhr.response});
+        let canvas1=tiff1.toCanvas();
+        $(canvas1).addClass("preview1");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+                                if (canvas1) {
+                                    document.getElementById('image1').style.display = "none";
+                                    document.getElementById('tif-canvas').innerHTML = ''
+                                    document.getElementById('tif-canvas').append(canvas1)
+                                    document.getElementById('tif-canvas').style.display = "block";
+                                }
+                               
+    }
+    xhr.send();
+}
+
+function displayTiff2(){
+    let xhr = new XMLHttpRequest();
+    xhr.responseType='arraybuffer';
+    xhr.open('GET',"../static/image/colon-cancer/colon_cancer_5.tif")
+    xhr.onload=(e)=>{
+        let tiff2=new Tiff({buffer: xhr.response});
+        let canvas2=tiff2.toCanvas();
+        $(canvas2).addClass("preview1");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+                                if (canvas2) {
+                                    document.getElementById('image2').style.display = "none";
+                                    document.getElementById('tif-canvas1').innerHTML = ''
+                                    document.getElementById('tif-canvas1').append(canvas2)
+                                    document.getElementById('tif-canvas1').style.display = "block";
+                                }
+                               
+    }
+    xhr.send();
+}
+
+function displayTiff3(){
+    let xhr = new XMLHttpRequest();
+    xhr.responseType='arraybuffer';
+    xhr.open('GET',"../static/image/colon-cancer/colon_cancer_10.tif")
+    xhr.onload=(e)=>{
+        let tiff3=new Tiff({buffer: xhr.response});
+        let canvas3=tiff3.toCanvas();
+        $(canvas3).addClass("preview1");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+                                if (canvas3) {
+                                    document.getElementById('image3').style.display = "none";
+                                    document.getElementById('tif-canvas2').innerHTML = ''
+                                    document.getElementById('tif-canvas2').append(canvas3)
+                                    document.getElementById('tif-canvas2').style.display = "block";
+                                }
+                               
+    }
+    xhr.send();
+}
+
+function displayTiff4(){
+    let xhr = new XMLHttpRequest();
+    xhr.responseType='arraybuffer';
+    xhr.open('GET',"../static/image/colon-cancer/colon_cancer_7.tif")
+    xhr.onload=(e)=>{
+        let tiff4=new Tiff({buffer: xhr.response});
+        let canvas4=tiff4.toCanvas();
+        $(canvas4).addClass("preview1");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+                                if (canvas4) {
+                                    document.getElementById('image4').style.display = "none";
+                                    document.getElementById('tif-canvas3').innerHTML = ''
+                                    document.getElementById('tif-canvas3').append(canvas4)
+                                    document.getElementById('tif-canvas3').style.display = "block";
+                                }
+                               
+    }
+    xhr.send();
+}
+
+function getResults() {
+if (selectFlag === false && uploadFlag === false) {
+  showErrorMsg('Please upload an X-Ray Scan!');
+  return false;
+}
+var img;
+
+if (selectFlag === true) {
+  img = uploadimg;
+} else {
+  img = document.getElementById('input-colon-image').files[0];
+}
+$('#buffer').show();
+
+   document.getElementById('analyse-button').disabled = true;
+   //var image_file = document.getElementById("input-colon-image").files[0]
+   //console.log(image_file);
+   var image_file=img;
+   var form_data = new FormData();
+   
+   form_data.append("image_file", image_file);
+   form_data.append("temp_id",'12345');
+
+   $.ajax({
+                  method: 'POST',
+                  url: "/coloncancerdetect",
+                  data: form_data,
+                  processData: false,
+                  contentType: false,
+                  success: function(response) {
+                   
+                    $('#buffer').hide();
+                        // if the model made predictions successfully
+                        // message will be empty string in this case
+                        if(response['status'] === true){
+                           
+                           
+                            
+                            var result_data=new FormData();
+                           var res_array=[];
+                           result_data=response;
+                           delete result_data['status'];
+                           delete result_data['temp_id'];
+                          Object.keys(result_data).forEach(key=>{
+                            res_array.push({
+                                diseaseName:checkName(key),
+                                //value:result_data[key],
+                                status: result_data[key] <= 0.5 ? true:false 
+                            })
+                          })
+                          console.log(res_array)
+                          var html="<table cellspacing='20'>";
+                          for(var i=0;i<res_array.length;i++){
+                            html+="<tr>";
+                        html+="<td>"+res_array[i].diseaseName+"</td>";
+                        //html+="<td>"+res_array[i].value+"</td>";
+                            ((res_array[i].status == true)?
+                        html+="<td>" + 
+                            '<p><span class="ok"></span></p>':
+                            ""
+                             ) + 
+                        "</td>";
+                        ((res_array[i].status == false)?
+                        html+="<td>" + 
+                            '<p><span class="notok"></span></p>':
+                            ""
+                             ) + 
+                        "</td>";
+            html+="</tr>";
+    
+        }
+        html+="</table>";
+    document.getElementById('result-data').innerHTML = html;
+                            //document.getElementById('result-score').innerHTML = score;
+                            //document.getElementById('result-message').innerHTML = message;
+                        }
+                        // if the model could not make predictions successfully
+                        // message will contain the string of error during processing 
+                        else{
+                   var message = response['message']
+                   document.getElementById('analyse-button').disabled = false;
+                   showErrorMsg(message)
+                   // document.getElementById('result-message').innerHTML = message;
+               }
+                           
+            },
+         error : function(err){
+            $('#buffer').hide();
+           console.log('something went wrong')
+           document.getElementById('analyse-button').disabled = false;
+           showErrorMsg('Something went wrong , Please try in some time')
+         }
+              });
+   
+              
+               
+
+}
+
+
+
+function  checkName(name) {   
+            if (name === "Adipose") { 
+             return "Adipose";    }
+            if (name === "Complex") {   
+               return "Complex";    } 
+               if (name === "Debris") {      
+                return "Debris";    }
+                if (name === "Empty") {      
+                return "Empty";    }
+                if (name === "Lympho") {      
+                return "Lympho";    }
+                if (name === "Mucosa") {      
+                return "Mucosa";    }
+                if (name === "Storma") {      
+                return "Storma";    }
+                if (name === "Tumor") {      
+                return "Tumor";    }
+                  }
+function showErrorMsg(text, timeout = 3000) {
+            document.getElementById('error-message').style.display = 'flex';
+            document.getElementById('error-message').innerHTML = text;
+            setTimeout(function () {
+                document.getElementById('error-message').style.display = 'none';
+            }, timeout);
+        }
+
+        function showInfoMsg(text, timeout = 3000) {
+            document.getElementById('info-message').style.display = 'flex';
+            document.getElementById('info-message').innerHTML = text;
+            setTimeout(function () {
+                document.getElementById('info-message').style.display = 'none';
+            }, timeout);
+        }
+
+
+
+
+$('#analyse-button').click(function(){
+   getResults();
+})
+$('#display-tiff-image').click(function(){
+
+    displayTiff();
+    displayTiff2();
+    displayTiff3();
+    displayTiff4();
+})
+
+$(document).ready(function() {
+  yourFunction();
+});
+function yourFunction() {
+  $('#buffer').hide();
+}
+
+</script>
+
+<h4 id="error-message" class="errorMsg" style="z-index: 9999;">
+    Error Message will goes here
+</h4>
+
+<h4 id="info-message" class="errorMsg" style="z-index: 9999;color: green;">
+    Info Message will goes here
+</h4>
+
+</body>
+
+</html>
